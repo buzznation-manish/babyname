@@ -85,7 +85,7 @@ model BabyProfile {
 
 model Name {
   id                String              @id @default(uuid()) @db.Uuid
-  nameRomanized     String              @map("name_romanized") @db.VarChar(100)
+  nameRomanized     String              @unique @map("name_romanized") @db.VarChar(100)
   nameNative        String              @map("name_native") @db.VarChar(100)
   startingSyllable  String              @map("starting_syllable") @db.VarChar(10)
   gender            Gender
@@ -110,7 +110,6 @@ model Name {
   trends            NameTrend?
   audio             AudioPronunciation?
 
-  @@index([nameRomanized])
   @@index([startingSyllable, gender])
   @@index([popularityScore(sort: Desc), trendScore(sort: Desc)])
   @@map("names")
