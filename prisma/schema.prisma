@@ -1,0 +1,294 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Gender {
+  BOY
+  GIRL
+  UNISEX
+}
+
+enum AuthProvider {
+  EMAIL
+  GOOGLE
+  APPLE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELED
+}
+
+// ==========================================
+// 1. USER & PROFILE MANAGEMENT
+// ==========================================
+
+model User {
+  id                 String          @id @default(uuid()) @db.Uuid
+  fullName           String          @map("full_name") @db.VarChar(120)
+  email              String          @unique @db.VarChar(150)
+  phone              String?         @db.VarChar(20)
+  passwordHash       String?         @map("password_hash") @db.Text
+  authProvider       AuthProvider    @default(EMAIL) @map("auth_provider")
+  country            String?         @db.VarChar(80)
+  languagePreference String          @default("en") @map("language_preference") @db.VarChar(20)
+  isPremium          Boolean         @default(false) @map("is_premium")
+  createdAt          DateTime        @default(now()) @map("created_at")
+  updatedAt          DateTime        @updatedAt @map("updated_at")
+  
+  babyProfiles       BabyProfile[]
+  searchHistories    SearchHistory[]
+  subscriptions      Subscription[]
+  savedNames         SavedName[]
+
+  @@map("users")
+}
+
+model BabyProfile {
+  id                  String           @id @default(uuid()) @db.Uuid
+  userId              String           @map("user_id") @db.Uuid
+  babyName            String?          @map("baby_name") @db.VarChar(100)
+  gender              Gender
+  dob                 DateTime         @db.Date
+  birthTime           String?          @map("birth_time") @db.VarChar(10)
+  birthPlace          String?          @map("birth_place") @db.VarChar(150)
+  nakshatra           String?          @db.VarChar(50)
+  rashi               String?          @db.VarChar(50)
+  preferredStyle      String?          @map("preferred_style") @db.VarChar(50)
+  preferredLengthMax  Int?             @map("preferred_length_max")
+  preferredStartSyllable String?       @map("preferred_start_syllable") @db.VarChar(10)
+  religion            String           @default("Hindu") @db.VarChar(50)
+  createdAt           DateTime         @default(now()) @map("created_at")
+
+  user                User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recommendations     Recommendation[]
+  savedNames          SavedName[]
+  votingSessions      VotingSession[]
+
+  @@map("baby_profiles")
+}
+
+// ==========================================
+// 2. NAMES MASTER DATASET
+// ==========================================
+
+model Name {
+  id                String              @id @default(uuid()) @db.Uuid
+  nameRomanized     String              @map("name_romanized") @db.VarChar(100)
+  nameNative        String              @map("name_native") @db.VarChar(100)
+  startingSyllable  String              @map("starting_syllable") @db.VarChar(10)
+  gender            Gender
+  origin            String              @default("Sanskrit") @db.VarChar(100)
+  meaning           String              @db.Text
+  pronunciation     String?             @db.VarChar(255)
+  syllablesCount    Int                 @map("syllables_count")
+  characterLength   Int                 @map("character_length")
+  popularityScore   Int                 @default(0) @map("popularity_score")
+  trendScore        Int                 @default(0) @map("trend_score")
+  modernityScore    Int                 @default(50) @map("modernity_score")
+  spiritualityScore Int                 @default(50) @map("spirituality_score")
+  uniquenessScore   Int                 @default(50) @map("uniqueness_score")
+  createdAt         DateTime            @default(now()) @map("created_at")
+
+  categories        NameCategoryMapping[]
+  astrologyScores   NameAstrologyScore[]
+  numerologyScores  NumerologyScore[]
+  recommendations   Recommendation[]
+  savedNames        SavedName[]
+  votes             Vote[]
+  trends            NameTrend?
+  audio             AudioPronunciation?
+
+  @@index([nameRomanized])
+  @@index([startingSyllable, gender])
+  @@index([popularityScore(sort: Desc), trendScore(sort: Desc)])
+  @@map("names")
+}
+
+model NameCategory {
+  id          String                @id @default(uuid()) @db.Uuid
+  name        String                @unique @db.VarChar(80)
+  description String?               @db.Text
+  names       NameCategoryMapping[]
+
+  @@map("name_categories")
+}
+
+model NameCategoryMapping {
+  nameId      String       @map("name_id") @db.Uuid
+  categoryId  String       @map("category_id") @db.Uuid
+
+  name        Name         @relation(fields: [nameId], references: [id], onDelete: Cascade)
+  category    NameCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([nameId, categoryId])
+  @@map("name_category_mappings")
+}
+
+// ==========================================
+// 3. ASTROLOGY & NUMEROLOGY ENGINE TABLES
+// ==========================================
+
+model AstrologyMapping {
+  id                 String   @id @default(uuid()) @db.Uuid
+  nakshatra          String   @db.VarChar(50)
+  pada               Int
+  recommendedSyllables Json   @map("recommended_syllables")
+  rashi              String   @db.VarChar(50)
+
+  @@unique([nakshatra, pada])
+  @@map("astrology_mappings")
+}
+
+model NameAstrologyScore {
+  id                 String   @id @default(uuid()) @db.Uuid
+  nameId             String   @map("name_id") @db.Uuid
+  nakshatra          String   @db.VarChar(50)
+  rashi              String   @db.VarChar(50)
+  compatibilityScore Int      @map("compatibility_score")
+
+  name               Name     @relation(fields: [nameId], references: [id], onDelete: Cascade)
+
+  @@index([nameId])
+  @@map("name_astrology_scores")
+}
+
+model NumerologyScore {
+  id               String   @id @default(uuid()) @db.Uuid
+  nameId           String   @unique @map("name_id") @db.Uuid
+  destinyNumber    Int      @map("destiny_number")
+  soulNumber       Int      @map("soul_number")
+  expressionNumber Int      @map("expression_number")
+  prosperityScore  Int      @default(50) @map("prosperity_score")
+  harmonyScore     Int      @default(50) @map("harmony_score")
+
+  name             Name     @relation(fields: [nameId], references: [id], onDelete: Cascade)
+
+  @@map("numerology_scores")
+}
+
+// ==========================================
+// 4. RECOMMENDATIONS & INTERACTIONS
+// ==========================================
+
+model Recommendation {
+  id                   String      @id @default(uuid()) @db.Uuid
+  babyProfileId        String      @map("baby_profile_id") @db.Uuid
+  nameId               String      @map("name_id") @db.Uuid
+  aiScore              Decimal     @map("ai_score") @db.Decimal(5, 2)
+  astrologyScore       Decimal     @map("astrology_score") @db.Decimal(5, 2)
+  numerologyScore      Decimal     @map("numerology_score") @db.Decimal(5, 2)
+  finalScore           Decimal     @map("final_score") @db.Decimal(5, 2)
+  recommendationReason String?     @map("recommendation_reason") @db.Text
+  createdAt            DateTime    @default(now()) @map("created_at")
+
+  babyProfile          BabyProfile @relation(fields: [babyProfileId], references: [id], onDelete: Cascade)
+  name                 Name        @relation(fields: [nameId], references: [id], onDelete: Cascade)
+
+  @@unique([babyProfileId, nameId])
+  @@index([finalScore(sort: Desc)])
+  @@map("recommendations")
+}
+
+model SavedName {
+  id            String      @id @default(uuid()) @db.Uuid
+  userId        String      @map("user_id") @db.Uuid
+  babyProfileId String      @map("baby_profile_id") @db.Uuid
+  nameId        String      @map("name_id") @db.Uuid
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  babyProfile   BabyProfile @relation(fields: [babyProfileId], references: [id], onDelete: Cascade)
+  name          Name        @relation(fields: [nameId], references: [id], onDelete: Cascade)
+
+  @@unique([babyProfileId, nameId])
+  @@map("saved_names")
+}
+
+model SearchHistory {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  searchQuery String @map("search_query") @db.Text
+  filters   Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("search_history")
+}
+
+// ==========================================
+// 5. ANALYTICS, SOCIAL VOTING & MULTIMEDIA
+// ==========================================
+
+model NameTrend {
+  id          String   @id @default(uuid()) @db.Uuid
+  nameId      String   @unique @map("name_id") @db.Uuid
+  searchCount Int      @default(0) @map("search_count")
+  saveCount   Int      @default(0) @map("save_count")
+  shareCount  Int      @default(0) @map("share_count")
+  trendRank   Int?     @map("trend_rank")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  name        Name     @relation(fields: [nameId], references: [id], onDelete: Cascade)
+
+  @@map("name_trends")
+}
+
+model VotingSession {
+  id            String      @id @default(uuid()) @db.Uuid
+  babyProfileId String      @map("baby_profile_id") @db.Uuid
+  shareCode     String      @unique @map("share_code") @db.VarChar(20)
+  expiresAt     DateTime?   @map("expires_at")
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  babyProfile   BabyProfile @relation(fields: [babyProfileId], references: [id], onDelete: Cascade)
+  votes         Vote[]
+
+  @@map("voting_sessions")
+}
+
+model Vote {
+  id              String        @id @default(uuid()) @db.Uuid
+  votingSessionId String        @map("voting_session_id") @db.Uuid
+  nameId          String        @map("name_id") @db.Uuid
+  voterName       String        @map("voter_name") @db.VarChar(120)
+  voteScore       Int           @map("vote_score")
+  comment         String?       @db.Text
+
+  votingSession   VotingSession @relation(fields: [votingSessionId], references: [id], onDelete: Cascade)
+  name            Name          @relation(fields: [nameId], references: [id], onDelete: Cascade)
+
+  @@map("votes")
+}
+
+model Subscription {
+  id          String             @id @default(uuid()) @db.Uuid
+  userId      String             @map("user_id") @db.Uuid
+  provider    String             @db.VarChar(50)
+  planName    String             @map("plan_name") @db.VarChar(50)
+  status      SubscriptionStatus @default(EXPIRED)
+  renewalDate DateTime?          @map("renewal_date")
+  createdAt   DateTime           @default(now()) @map("created_at")
+
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model AudioPronunciation {
+  id        String   @id @default(uuid()) @db.Uuid
+  nameId    String   @unique @map("name_id") @db.Uuid
+  audioUrl  String   @map("audio_url") @db.Text
+  language  String   @default("hi") @db.VarChar(20)
+
+  name      Name     @relation(fields: [nameId], references: [id], onDelete: Cascade)
+
+  @@map("audio_pronunciations")
+}
