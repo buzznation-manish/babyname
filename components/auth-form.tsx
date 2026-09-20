@@ -1,12 +1,21 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { type FormEvent, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 type AuthMode = 'login' | 'signup';
 
 interface AuthFormProps {
   mode: AuthMode;
+}
+
+interface SyncUserResponse {
+  ok?: boolean;
+  error?: string;
+  user?: {
+    id: string;
+    email: string;
+  };
 }
 
 export default function AuthForm({ mode }: AuthFormProps) {
@@ -17,6 +26,31 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function syncUserWithPrisma(): Promise<boolean> {
+    try {
+      console.log('Supabase auth succeeded; syncing user with Prisma...');
+
+      const syncResponse = await fetch('/api/auth/sync-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const syncBody = (await syncResponse.json().catch(() => null)) as SyncUserResponse | null;
+
+      if (!syncResponse.ok) {
+        console.error('Prisma user sync failed:', syncBody);
+        setError(syncBody?.error ?? 'Failed to sync your user profile. Please try again.');
+        return false;
+      }
+
+      console.log('Prisma user sync succeeded:', syncBody);
+      return true;
+    } catch (syncError) {
+      console.error('Prisma user sync request failed:', syncError);
+      setError('Could not reach the user sync service. Please try again.');
+      return false;
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -32,14 +66,19 @@ export default function AuthForm({ mode }: AuthFormProps) {
           options: { data: { full_name: fullName } },
         });
 
-    setIsSubmitting(false);
-
     if (result.error) {
+      setIsSubmitting(false);
       setError(result.error.message);
+      console.error('Supabase auth error:', result.error.message);
       return;
     }
 
-    if (mode === 'signup') {
+    const didSync = await syncUserWithPrisma();
+    setIsSubmitting(false);
+
+    if (!didSync) return;
+
+    if (mode === 'signup' && !result.data.session) {
       setMessage('Account created. Check your email if confirmation is enabled.');
       return;
     }
@@ -49,12 +88,16 @@ export default function AuthForm({ mode }: AuthFormProps) {
 
   async function handleGoogleLogin() {
     setError(null);
+    setMessage(null);
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
 
-    if (oauthError) setError(oauthError.message);
+    if (oauthError) {
+      setError(oauthError.message);
+      console.error('Google OAuth error:', oauthError.message);
+    }
   }
 
   return (
