@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
 import type { AuthProvider } from '@prisma/client';
 
-export async function POST(request: NextRequest) {
+export async function POST()  {
   try {
     const supabase = await createClient();
     const {
