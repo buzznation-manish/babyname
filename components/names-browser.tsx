@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 
 type Gender = 'BOY' | 'GIRL' | 'UNISEX';
 
@@ -96,7 +97,7 @@ export default function NamesBrowser() {
         {data?.names.map((name) => (
           <article key={name.id} className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-100">
             <div className="flex items-start justify-between gap-3">
-              <div><h2 className="text-2xl font-semibold text-stone-900">{name.nameRomanized}</h2><p className="text-sm text-stone-500">{name.nameNative}</p></div>
+              <div><h2 className="text-2xl font-semibold text-stone-900"><Link href={`/names/${name.id}`} className="hover:underline">{name.nameRomanized}</Link></h2><p className="text-sm text-stone-500">{name.nameNative}</p></div>
               <span className="rounded-full bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-700">{name.gender}</span>
             </div>
             <p className="mt-4 text-sm leading-6 text-stone-700">{name.meaning}</p>
