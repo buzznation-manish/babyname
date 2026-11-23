@@ -1,26 +1,61 @@
+import Link from 'next/link';
+import UiIcon, { type IconName } from '@/components/ui-icon';
+
+const spaces: { title: string; description: string; href: string; icon: IconName; color: string }[] = [
+  { title: 'Baby profiles', description: 'A little space for each little one. Add a baby or update your preferences.', href: '/baby-profile', icon: 'profiles', color: 'bg-[#e9eddf]' },
+  { title: 'Your recommendations', description: 'Find suggestions shaped around the preferences that matter to your family.', href: '/recommendations', icon: 'spark', color: 'bg-[#f7e9df]' },
+  { title: 'Your shortlist', description: 'Come back to the names you love, with a separate list for every baby.', href: '/shortlist', icon: 'heart', color: 'bg-[#eee6ee]' },
+  { title: 'The name collection', description: 'Follow a meaning, a sound or a feeling. There’s a name waiting to be found.', href: '/names', icon: 'search', color: 'bg-[#e5edf0]' },
+];
+
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-amber-50 via-rose-50 to-sky-50 px-6 py-16">
-      <section className="mx-auto flex max-w-4xl flex-col items-center text-center">
-        <p className="mb-4 rounded-full bg-white/80 px-4 py-2 text-sm font-medium text-rose-700 shadow-sm">
-          Baby Name Recommendation Platform
-        </p>
-        <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-stone-900 sm:text-6xl">
-          Find a name as special as your little one.
-        </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-8 text-stone-600">
-          A thoughtful starting point for meaningful, memorable, and culturally
-          inspired baby names.
-        </p>
-        <div className="mt-10 flex flex-wrap justify-center gap-4">
-          <span className="rounded-lg bg-stone-900 px-5 py-3 text-sm font-semibold text-white">
-            Project scaffold ready
-          </span>
-          <span className="rounded-lg border border-stone-200 bg-white px-5 py-3 text-sm font-semibold text-stone-700">
-            Next.js + TypeScript + Tailwind
-          </span>
+    <main className="overflow-hidden bg-[#fcfcf7] text-[#304b3d]">
+      <section className="relative mx-auto grid max-w-7xl items-center gap-8 px-5 pb-16 pt-12 sm:px-8 sm:pt-16 lg:grid-cols-[1.05fr_1fr] lg:gap-12 lg:px-10 lg:pb-20 lg:pt-20">
+        <div className="relative z-10 max-w-xl">
+          <p className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#6c7c62]"><span className="h-px w-7 bg-[#a7b59a]" /> A beautiful beginning</p>
+          <h1 className="home-serif text-[clamp(3.25rem,6vw,5.6rem)] leading-[1.04] tracking-[-0.055em]">A little name.<br />A whole world<br />of <em className="font-normal text-[#a66b51]">meaning.</em></h1>
+          <p className="mt-6 max-w-md text-base leading-7 text-[#71776b] sm:text-lg sm:leading-8">For the person you can’t wait to meet. Discover meaningful names, follow your family’s preferences, and keep the ones that feel like home.</p>
+          <div className="mt-8 flex flex-wrap items-center gap-4"><Link href="/signup" className="inline-flex items-center gap-5 rounded-full bg-[#304b3d] px-7 py-4 text-sm font-semibold text-white transition-colors hover:bg-[#22392c]">Start your journey <UiIcon name="arrow" className="h-4 w-4" /></Link><Link href="/names" className="inline-flex items-center gap-2 px-2 py-3 text-sm font-semibold hover:text-[#a66b51]">Just browsing? Explore names <UiIcon name="arrow" className="h-4 w-4" /></Link></div>
+          <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-xs text-[#71776b]"><span className="flex items-center gap-1.5"><UiIcon name="leaf" className="h-3.5 w-3.5" /> Meaningful discoveries</span><span className="flex items-center gap-1.5"><UiIcon name="heart" className="h-3.5 w-3.5" /> Made for your family</span></div>
+        </div>
+
+        <div className="relative mx-auto mt-3 h-[420px] w-full max-w-[500px] sm:h-[480px] lg:mt-0" aria-label="A little name inspiration">
+          <div aria-hidden="true" className="absolute inset-x-8 bottom-6 top-5 rounded-t-[48%] rounded-b-[42%] bg-[#e9eedf]" />
+          <div aria-hidden="true" className="absolute inset-x-4 bottom-0 top-10 -rotate-6 rounded-t-[48%] rounded-b-[42%] border border-[#cfd9c2]" />
+          <svg aria-hidden="true" viewBox="0 0 200 360" className="absolute -right-10 bottom-0 h-80 w-44 text-[#bdcbaa]" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M50 350C120 270 45 140 155 10" /><path d="M87 255C22 245 25 213 22 195c43 6 65 20 65 60ZM80 196c62-7 72-38 73-53-43 3-63 17-73 53ZM95 126C47 104 55 75 56 59c31 18 44 37 39 67ZM127 55c43-4 51-21 55-37-28-2-44 10-55 37Z" fill="currentColor" fillOpacity="0.2" /></svg>
+          <span aria-hidden="true" className="absolute left-2 top-10 text-[#a7b59a]"><UiIcon name="spark" className="h-9 w-9" /></span>
+          <span aria-hidden="true" className="absolute right-9 top-0 text-[#b78a6e]"><UiIcon name="spark" className="h-5 w-5" /></span>
+          <Link href="/names?search=Aarav" className="absolute left-[6%] top-[12%] w-[65%] -rotate-[7deg] rounded-2xl border border-[#eee9df] bg-[#fffef9] p-6 shadow-[0_18px_50px_-20px_rgba(57,72,39,0.28)] transition-transform hover:-rotate-3 sm:p-7"><p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#66745b]">A little peace</p><div className="mt-3 flex items-center justify-between"><h2 className="home-serif text-4xl sm:text-5xl">Aarav</h2><span className="rounded-full bg-[#edf1e6] p-2 text-[#738467]"><UiIcon name="leaf" className="h-5 w-5" /></span></div><p className="mt-1 text-sm text-[#858878]">आरव</p><p className="mt-4 text-sm text-[#71776b]">Peaceful and calm.</p><div className="mt-4 flex justify-between border-t border-[#eeeee5] pt-3 text-[11px] text-[#66745b]"><span>Boy · Sanskrit</span><UiIcon name="arrow" className="h-4 w-4" /></div></Link>
+          <Link href="/names?search=Tara" className="absolute right-[3%] top-[47%] w-[55%] rotate-[8deg] rounded-2xl border border-[#ead7c8] bg-[#f6e5d7] p-6 shadow-[0_18px_50px_-22px_rgba(110,70,40,0.26)] transition-transform hover:rotate-3"><div className="flex items-center justify-between"><h2 className="home-serif text-4xl text-[#825c45]">Tara</h2><UiIcon name="spark" className="h-5 w-5 text-[#b78a6e]" /></div><p className="mt-1 text-sm text-[#88634c]">तारा</p><p className="mt-4 text-sm text-[#805e47]">A star. A little guiding light.</p><div className="mt-4 flex justify-between border-t border-[#e7cebd] pt-3 text-[11px] text-[#88634c]"><span>Girl · Sanskrit</span><UiIcon name="arrow" className="h-4 w-4" /></div></Link>
+          <div className="absolute bottom-1 left-[7%] flex items-center gap-3 rounded-full border border-[#e5e8dd] bg-white px-5 py-3 shadow-sm"><span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f2e8ec] text-[#ac7a8b]"><UiIcon name="heart" className="h-4 w-4" /></span><p className="text-xs text-[#6f7966]">The beginning of a lifelong story.</p></div>
         </div>
       </section>
+
+      <section aria-labelledby="search-heading" className="relative z-10 mx-auto max-w-5xl px-5 pb-16 sm:px-8">
+        <div className="rounded-[1.5rem] border border-[#e6e9dd] bg-white p-6 shadow-[0_12px_45px_-25px_rgba(57,72,39,0.18)] sm:p-8">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-2"><h2 id="search-heading" className="home-serif text-2xl">Every name has a story. Find yours.</h2><span className="text-xs text-[#66745b]">No account needed to explore</span></div>
+          <form action="/names" method="get" className="flex items-center gap-3 rounded-xl border border-[#dce2d1] bg-[#fafbf6] p-2 pl-4"><UiIcon name="search" className="h-5 w-5 shrink-0 text-[#66745b]" /><label htmlFor="home-name-search" className="sr-only">Search names or meanings</label><input id="home-name-search" name="search" maxLength={200} placeholder="Try a name or meaning, like ‘light’" className="min-w-0 flex-1 bg-transparent py-3 text-sm text-[#304b3d] outline-none placeholder:text-[#71776b]" /><button type="submit" className="inline-flex items-center gap-2 rounded-lg bg-[#304b3d] px-4 py-3 text-sm font-medium text-white hover:bg-[#22392c]"><span className="hidden sm:inline">Find names</span><UiIcon name="arrow" className="h-4 w-4" /><span className="sr-only sm:hidden">Find names</span></button></form>
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs"><span className="mr-1 text-[#66745b]">A little inspiration:</span>{['Nature', 'Spiritual', 'Modern'].map((category) => <Link key={category} href={`/names?category=${category}`} className="rounded-full border border-[#e5e8dd] px-3 py-1.5 text-[#6c7c62] transition-colors hover:bg-[#eef2e7]">{category}</Link>)}</div>
+        </div>
+      </section>
+
+      <section id="how-it-works" className="border-y border-[#e8ebdf] bg-[#f3f5ec] px-5 py-16 sm:px-8 lg:py-20">
+        <div className="mx-auto max-w-6xl"><div className="text-center"><p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#66745b]">A thoughtful little journey</p><h2 className="home-serif mt-4 text-3xl tracking-tight sm:text-4xl">From a world of names to <em className="font-normal text-[#a66b51]">your one.</em></h2></div>
+          <div className="mt-12 grid gap-10 md:grid-cols-3">{[
+            { number: '01', title: 'Tell us about your baby', description: 'Create a profile and share your preferences, from gender to a favorite starting sound.', href: '/baby-profile', label: 'Create a baby profile' },
+            { number: '02', title: 'Explore your possibilities', description: 'Discover suggestions for your baby. Open a name to learn its meaning, origin and more.', href: '/recommendations', label: 'See recommendations' },
+            { number: '03', title: 'Keep the ones you love', description: 'Build a shortlist for each baby. Return to your favorites whenever inspiration strikes.', href: '/shortlist', label: 'Open your shortlist' },
+          ].map((step) => <article key={step.number} className="relative px-2"><span className="home-serif flex h-12 w-12 items-center justify-center rounded-full border border-[#d6deca] text-lg text-[#66745b]">{step.number}</span><h3 className="home-serif mt-5 text-2xl">{step.title}</h3><p className="mt-3 max-w-xs text-sm leading-7 text-[#66725d]">{step.description}</p><Link prefetch={false} href={step.href} className="mt-5 inline-flex items-center gap-3 text-xs font-semibold hover:text-[#a66b51]">{step.label}<UiIcon name="arrow" className="h-4 w-4" /></Link></article>)}</div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-10 lg:py-20"><div className="flex flex-wrap items-end justify-between gap-5"><div><p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#66745b]">Pick up where your heart left off</p><h2 className="home-serif mt-4 text-3xl tracking-tight sm:text-4xl">Your family’s naming space.</h2></div><Link prefetch={false} href="/baby-profile" className="inline-flex items-center gap-3 text-sm font-semibold hover:text-[#a66b51]">Continue your journey<UiIcon name="arrow" className="h-4 w-4" /></Link></div>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{spaces.map((space) => <Link key={space.href} prefetch={space.href === '/names' ? undefined : false} href={space.href} className="group rounded-2xl border border-[#e6e9dd] bg-white p-6 transition-colors hover:border-[#a7b59a] hover:bg-[#fafbf7]"><span className={`flex h-11 w-11 items-center justify-center rounded-xl ${space.color}`}><UiIcon name={space.icon} className="h-5 w-5" /></span><h3 className="mt-5 text-base font-semibold">{space.title}</h3><p className="mt-3 text-sm leading-6 text-[#6f7765]">{space.description}</p><UiIcon name="arrow" className="mt-6 h-5 w-5 text-[#9aa58d] transition-transform group-hover:translate-x-1 motion-reduce:transform-none" /></Link>)}</div>
+      </section>
+
+      <section className="mx-5 mb-12 rounded-[2rem] bg-[#e9eedf] px-6 py-12 text-center sm:mx-8 sm:py-16 lg:mx-auto lg:max-w-[1200px]"><UiIcon name="leaf" className="mx-auto h-7 w-7 text-[#8b9e77]" /><h2 className="home-serif mt-5 text-3xl tracking-tight sm:text-4xl">One day, you’ll say their name<br className="hidden sm:block" /> a thousand times. <em className="font-normal">Let’s find it.</em></h2><Link href="/signup" className="mt-7 inline-flex items-center gap-4 rounded-full bg-[#304b3d] px-7 py-4 text-sm font-semibold text-white hover:bg-[#22392c]">Begin your baby’s story<UiIcon name="arrow" className="h-4 w-4" /></Link></section>
+      <footer className="border-t border-[#e8ebdf] px-5 py-8 sm:px-8"><div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-5"><div><Link href="/" className="text-xl font-semibold tracking-[-0.05em]">babyname.</Link><p className="mt-1 text-xs text-[#66745b]">A little name. A lifetime of meaning.</p></div><nav aria-label="Footer navigation" className="flex flex-wrap gap-6 text-xs text-[#71776b]"><Link href="/names" className="hover:underline">Explore names</Link><Link prefetch={false} href="/baby-profile" className="hover:underline">Baby profiles</Link><Link prefetch={false} href="/shortlist" className="hover:underline">Shortlist</Link><Link href="/login" className="hover:underline">Log in</Link></nav></div></footer>
     </main>
   );
 }

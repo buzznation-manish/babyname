@@ -25,6 +25,8 @@ Copy `.env.example` to `.env` and securely fill in your development project sett
 
 ## Application flow
 
+The home page `/` provides a name/meaning search, category inspiration, a journey guide and direct links to all current features. Shared navigation remains available throughout the app and retains a valid selected `profileId` on family-related links.
+
 `/signup` or `/login` → `/baby-profile` → `/recommendations` → `/names/[id]`.
 
 Manage all your babies at `/baby-profile`: use **Add another baby** for a new record, or select **Edit** for an existing one. Links use `profileId` to preserve the selected baby across editing, recommendations, name details and shortlist. Saving redirects to recommendations for the returned profile ID. There is no profile-delete operation in this milestone.

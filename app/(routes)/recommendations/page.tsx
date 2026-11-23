@@ -23,6 +23,7 @@ export default async function RecommendationsPage({ searchParams }: Props) {
   const profiles = await prisma.babyProfile.findMany({
     where: { userId: user.id },
     orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+    select: { id: true, babyName: true, gender: true, preferredStartSyllable: true, preferredLengthMax: true, preferredStyle: true },
   });
   if (!profiles.length) redirect('/baby-profile');
   const requestedId = typeof query?.profileId === 'string' ? query.profileId : undefined;
@@ -37,23 +38,23 @@ export default async function RecommendationsPage({ searchParams }: Props) {
   const requestedPage = typeof query?.page === 'string' ? Number(query.page) : 1;
   const pageNumber = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
   const pageSize = 12;
-  const [candidateCount, candidates] = await prisma.$transaction([
+  const [candidateCount, candidates, savedNames] = await Promise.all([
     prisma.name.count({ where }),
     prisma.name.findMany({
       where,
-      include: { categories: { include: { category: true } } },
+      select: { id: true, nameRomanized: true, nameNative: true, gender: true, origin: true, meaning: true, characterLength: true, popularityScore: true, trendScore: true, categories: { select: { category: { select: { name: true } } } } },
       orderBy: [{ popularityScore: 'desc' }, { trendScore: 'desc' }, { nameRomanized: 'asc' }],
       take: 200,
+    }),
+    prisma.savedName.findMany({
+      where: { userId: user.id, babyProfileId: profile.id },
+      select: { nameId: true },
     }),
   ]);
   const ranked = rankNames(candidates, profile.preferredStyle);
   const totalPages = Math.max(1, Math.ceil(ranked.length / pageSize));
   const page = Math.min(pageNumber, totalPages);
   const names = ranked.slice((page - 1) * pageSize, page * pageSize);
-  const savedNames = await prisma.savedName.findMany({
-    where: { userId: user.id, babyProfileId: profile.id, nameId: { in: names.map((name) => name.id) } },
-    select: { nameId: true },
-  });
   const savedIds = new Set(savedNames.map((item) => item.nameId));
   const profileQuery = new URLSearchParams({ profileId: profile.id }).toString();
   const nameLink = (id: string) => `/names/${id}?${profileQuery}`;

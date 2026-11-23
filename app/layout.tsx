@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import SiteHeader, { HeaderContent } from '@/components/site-header';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -13,7 +15,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <a href="#main-content" className="skip-link">Skip to content</a>
+        <Suspense fallback={<HeaderContent />}><SiteHeader /></Suspense>
+        <div id="main-content" tabIndex={-1}>{children}</div>
+      </body>
     </html>
   );
 }

@@ -12,6 +12,7 @@ The uploaded `Database_Schema_For_Development.docx` has now been reviewed agains
 | Google OAuth | Code exists; unverified | Configure and test provider and callback. |
 | Baby profile create/update | Multi-profile milestone implemented; deployed validation pending | New profile mode, owned-profile list/edit selection, exact saved-profile recommendation redirect, stricter date/time/length validation. No delete operation. |
 | Names browsing/filtering | Existing; user reported working | Production uses `SUPABASE_DATABASE_URL`. |
+| Home and navigation | Redesigned; deployment review pending | Responsive landing page, shared route navigation, real search/category links, journey guide and family-space shortcuts. Local desktop/mobile browser checks pass. |
 | Recommendations | Deployed happy path user-tested | User confirmed signup → profile → recommendations → Explore name. Filter edge cases and account isolation still need deployed checks. |
 | Name details | Deployed happy path user-tested | User confirmed Explore name opens. Invalid/missing ID and failure cases still need deployed checks. |
 | Shortlist | Deployed happy path user-tested | User confirmed Save → Refresh → Remove working. API ownership tests pass; deployed Supabase SQL policy state has not been independently inspected. |
@@ -42,7 +43,7 @@ npx prisma generate
 npm run build
 ```
 
-Twenty-five tests pass: thirteen profile validation/selection/API tests, five recommendation tests and seven shortlist API tests. Lint, Next route type generation and a separate complete source type-check pass against actual schema-derived Prisma declarations generated with Prisma 5.22's official WASM parser and type generator, with the library import mapped to the installed Prisma runtime declarations in an external type-check configuration. This does not install a runtime engine or change application type settings. Prior production JavaScript compilation passed for the recommendations and shortlist milestones. See RELEASE-3.md for multi-profile deployment checks.
+Twenty-eight tests pass: thirteen profile validation/selection/API tests, five recommendation tests, seven shortlist API tests and three home-to-browse filter tests. Lint, Next route type generation and a separate complete source type-check pass against actual schema-derived Prisma declarations generated with Prisma 5.22's official WASM parser and type generator, with the library import mapped to the installed Prisma runtime declarations in an external type-check configuration. This does not install a runtime engine or change application type settings. Prior production JavaScript compilation passed for the recommendations, shortlist and multiple-profile milestones. See RELEASE-4.md for the home/navigation and loading changes and their verification limits.
 
 The ordinary `npm run build` did not complete: the installed runtime client lacks the generated model types. Normal generation is blocked by proxy HTTP 403 at `binaries.prisma.sh`. Authenticated/database checks remain unverified because no database/Supabase variables are injected. Keep checksum and TLS verification enabled. No production database changes were made. Use normal `npx prisma generate && npm run build` on Vercel; the external type-check configuration is only a local diagnostic aid, not a deployment workaround.
 
