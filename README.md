@@ -29,6 +29,8 @@ Copy `.env.example` to `.env` and securely fill in your development project sett
 
 Public browsing is available at `/names`. Recommendations use saved gender, starting syllable, maximum length and supported style categories. They do not calculate astrology or numerology.
 
+Save/remove names from recommendations or name details, then visit `/shortlist` for the selected baby's saved names. The API at `/api/saved-names` requires an authenticated account and verifies baby-profile ownership for every operation. Apply the reviewed saved-name policy hardening in `supabase/migrations/20261123000000_harden_saved_names_ownership.sql` to the intended Supabase database; deploying to Vercel does not apply SQL policies. See [shortlist release checks](docs/RELEASE-2.md).
+
 ## Checks
 
 ```sh

@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
 import { buildNameFilters, getSupportedStyle, matchesStyle, rankNames } from '@/lib/recommendations';
+import SaveNameButton from '@/components/save-name-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,12 +50,19 @@ export default async function RecommendationsPage({ searchParams }: Props) {
   const totalPages = Math.max(1, Math.ceil(ranked.length / pageSize));
   const page = Math.min(pageNumber, totalPages);
   const names = ranked.slice((page - 1) * pageSize, page * pageSize);
+  const savedNames = await prisma.savedName.findMany({
+    where: { userId: user.id, babyProfileId: profile.id, nameId: { in: names.map((name) => name.id) } },
+    select: { nameId: true },
+  });
+  const savedIds = new Set(savedNames.map((item) => item.nameId));
+  const profileQuery = new URLSearchParams({ profileId: profile.id }).toString();
+  const nameLink = (id: string) => `/names/${id}?${profileQuery}`;
   const pageLink = (target: number) => `/recommendations?${new URLSearchParams({ profileId: profile.id, page: String(target) })}`;
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-amber-50 via-rose-50 to-sky-50 px-6 py-12">
       <section className="mx-auto max-w-6xl">
-        <nav className="mb-8 flex flex-wrap gap-5 text-sm text-rose-800"><Link href="/baby-profile" className="underline">Edit baby profile</Link><Link href="/names" className="underline">Browse all names</Link></nav>
+        <nav className="mb-8 flex flex-wrap gap-5 text-sm text-rose-800"><Link href="/baby-profile" className="underline">Edit baby profile</Link><Link href={`/shortlist?${profileQuery}`} className="underline">Your shortlist</Link><Link href="/names" className="underline">Browse all names</Link></nav>
         <p className="text-sm font-medium text-rose-700">Chosen with your family in mind</p>
         <h1 className="mt-2 text-4xl font-bold text-stone-900">Name recommendations</h1>
         <p className="mt-3 text-stone-600">Suggestions based on your saved preferences. Open a name to explore its meaning.</p>
@@ -76,11 +84,12 @@ export default async function RecommendationsPage({ searchParams }: Props) {
         {!names.length ? <div className="rounded-2xl bg-white p-8 text-center"><h2 className="text-xl font-semibold">No names match these preferences yet</h2><p className="mt-3 text-stone-600">Try a different starting syllable or a longer maximum length.</p><Link href="/baby-profile" className="mt-5 inline-block rounded-lg bg-stone-900 px-5 py-3 text-white">Update preferences</Link></div> : <>
           <p className="mb-5 text-sm text-stone-600">{candidateCount} matching names{candidateCount > 200 ? '; showing suggestions from the 200 most popular matches' : ''}.</p>
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">{names.map((name) => <article key={name.id} className="rounded-2xl bg-white p-6 shadow-sm">
-            <div className="flex items-start justify-between gap-3"><div><h2 className="text-2xl font-semibold text-stone-900"><Link href={`/names/${name.id}`} className="hover:underline">{name.nameRomanized}</Link></h2><p className="text-stone-500">{name.nameNative}</p></div><span className="rounded-full bg-rose-50 px-3 py-1 text-xs text-rose-800">{name.gender}</span></div>
+            <div className="flex items-start justify-between gap-3"><div><h2 className="text-2xl font-semibold text-stone-900"><Link href={nameLink(name.id)} className="hover:underline">{name.nameRomanized}</Link></h2><p className="text-stone-500">{name.nameNative}</p></div><span className="rounded-full bg-rose-50 px-3 py-1 text-xs text-rose-800">{name.gender}</span></div>
             <p className="mt-4 text-sm leading-6 text-stone-700">{name.meaning}</p>
             <p className="mt-4 text-sm text-stone-600">{name.characterLength} letters · {name.origin}</p>
             {style && matchesStyle(name, style) && <p className="mt-3 text-sm font-medium text-rose-700">Matches your {style.toLowerCase()} style</p>}
-            <Link href={`/names/${name.id}`} className="mt-5 inline-block text-sm font-semibold text-rose-800 underline">Explore name</Link>
+            <Link href={nameLink(name.id)} className="mt-5 inline-block text-sm font-semibold text-rose-800 underline">Explore name</Link>
+            <SaveNameButton key={`${profile.id}:${name.id}`} profileId={profile.id} nameId={name.id} initialSaved={savedIds.has(name.id)} />
           </article>)}</div>
           {totalPages > 1 && <nav aria-label="Recommendation pages" className="mt-8 flex justify-center gap-5 text-sm">{page > 1 && <Link className="underline" href={pageLink(page - 1)}>Previous</Link>}<span>Page {page} of {totalPages}</span>{page < totalPages && <Link className="underline" href={pageLink(page + 1)}>Next</Link>}</nav>}
         </>}
