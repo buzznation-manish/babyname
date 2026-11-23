@@ -4,10 +4,11 @@ import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
-export default async function NameDetailsPage({ params }: { params: { id: string } }) {
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.id)) notFound();
+export default async function NameDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) notFound();
   const name = await prisma.name.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { categories: { include: { category: true } } },
   });
   if (!name) notFound();

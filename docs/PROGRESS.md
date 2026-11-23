@@ -12,14 +12,14 @@ The uploaded `Database_Schema_For_Development.docx` has now been reviewed agains
 | Google OAuth | Code exists; unverified | Configure and test provider and callback. |
 | Baby profile create/update | Existing; user-tested on Vercel | Retain `/recommendations` redirect; verify validation and multiple-profile behavior. |
 | Names browsing/filtering | Existing; user reported working | Production uses `SUPABASE_DATABASE_URL`. |
-| Recommendations | Implemented locally; deployed validation pending | Authenticated page, account-scoped profiles, preference filters, supported style ordering, pagination, loading, error and empty states. |
-| Name details | Implemented locally; deployed validation pending | `/names/[id]`, linked from browsing and suggestions; invalid/missing IDs show not-found UI. |
+| Recommendations | Source integrated; deployed validation pending | Authenticated page, account-scoped profiles, preference filters, supported style ordering, pagination, loading, error and empty states. |
+| Name details | Source integrated; deployed validation pending | `/names/[id]`, linked from browsing and suggestions; invalid/missing IDs show not-found UI. |
 | Shortlist | Schema only | Ownership-scoped API and UI. |
 | Astrology/numerology | Schema only | Agree calculation rules and validate inputs/data; no invented scores. |
 | Recommendation history | Schema only | Current suggestions are computed on request, not persisted. |
 | Voting, audio and trends | Schema/policies and sample fields | Product flows, real data, endpoints and UI. |
 | Premium/payments | Subscription schema only | Decide scope, provider, prices and entitlements. |
-| Dependencies/security | Required follow-up before release | Patch vulnerable Next.js 14.2.15 and reconcile stale lockfile, then test. |
+| Dependencies/security | Updated and checked | Next.js and eslint-config-next 15.5.29, PostCSS 8.5.33 (including Next's transitive dependency), refreshed lockfile. npm ci passes; production npm audit reports zero known vulnerabilities at this check. Access-control review remains. |
 
 ## Implemented matching rules
 

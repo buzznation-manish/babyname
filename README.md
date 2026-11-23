@@ -21,7 +21,7 @@ npm run dev
 
 Open http://localhost:3000.
 
-Copy `.env.example` to `.env` and securely fill in your development project settings first. Runtime database access uses `SUPABASE_DATABASE_URL`; Prisma migration operations use `DIRECT_URL`. Do not commit secrets. The lockfile currently needs reconciliation with the manifest, so `npm ci` rejects it.
+Copy `.env.example` to `.env` and securely fill in your development project settings first. Runtime database access uses `SUPABASE_DATABASE_URL`; Prisma migration operations use `DIRECT_URL`. Do not commit secrets. Use `npm ci` for a clean install from the committed lockfile.
 
 ## Application flow
 
@@ -32,7 +32,7 @@ Public browsing is available at `/names`. Recommendations use saved gender, star
 ## Checks
 
 ```sh
-npx tsx --test tests/recommendations.test.ts
+npm test
 npm run lint
 npx prisma generate
 npm run build

@@ -7,10 +7,11 @@ import { buildNameFilters, getSupportedStyle, matchesStyle, rankNames } from '@/
 export const dynamic = 'force-dynamic';
 
 interface Props {
-  searchParams?: { profileId?: string | string[]; page?: string | string[] };
+  searchParams?: Promise<{ profileId?: string | string[]; page?: string | string[] }>;
 }
 
 export default async function RecommendationsPage({ searchParams }: Props) {
+  const query = await searchParams;
   const supabase = await createClient();
   const { data: { user: authUser }, error } = await supabase.auth.getUser();
   if (error || !authUser?.email) redirect('/login?redirectedFrom=%2Frecommendations');
@@ -23,7 +24,7 @@ export default async function RecommendationsPage({ searchParams }: Props) {
     orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
   });
   if (!profiles.length) redirect('/baby-profile');
-  const requestedId = typeof searchParams?.profileId === 'string' ? searchParams.profileId : undefined;
+  const requestedId = typeof query?.profileId === 'string' ? query.profileId : undefined;
   const profile = requestedId ? profiles.find((item) => item.id === requestedId) : profiles[0];
 
   if (!profile) {
@@ -32,7 +33,7 @@ export default async function RecommendationsPage({ searchParams }: Props) {
 
   const where = buildNameFilters(profile);
   const style = getSupportedStyle(profile.preferredStyle);
-  const requestedPage = typeof searchParams?.page === 'string' ? Number(searchParams.page) : 1;
+  const requestedPage = typeof query?.page === 'string' ? Number(query.page) : 1;
   const pageNumber = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
   const pageSize = 12;
   const [candidateCount, candidates] = await prisma.$transaction([
