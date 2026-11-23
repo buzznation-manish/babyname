@@ -10,11 +10,11 @@ The uploaded `Database_Schema_For_Development.docx` has now been reviewed agains
 | --- | --- | --- |
 | Email signup/login and user sync | Existing; user-tested on Vercel | Email-confirmation path needs testing: code currently attempts user sync before checking whether a session exists. |
 | Google OAuth | Code exists; unverified | Configure and test provider and callback. |
-| Baby profile create/update | Existing; user-tested on Vercel | Retain `/recommendations` redirect; verify validation and multiple-profile behavior. |
+| Baby profile create/update | Multi-profile milestone implemented; deployed validation pending | New profile mode, owned-profile list/edit selection, exact saved-profile recommendation redirect, stricter date/time/length validation. No delete operation. |
 | Names browsing/filtering | Existing; user reported working | Production uses `SUPABASE_DATABASE_URL`. |
 | Recommendations | Deployed happy path user-tested | User confirmed signup → profile → recommendations → Explore name. Filter edge cases and account isolation still need deployed checks. |
 | Name details | Deployed happy path user-tested | User confirmed Explore name opens. Invalid/missing ID and failure cases still need deployed checks. |
-| Shortlist | Implemented; deployed validation pending | Save/remove buttons, per-baby page, authenticated GET/POST/DELETE API, profile ownership and repeat-save handling. See RELEASE-2.md; new SQL policy hardening is prepared but not applied here. |
+| Shortlist | Deployed happy path user-tested | User confirmed Save → Refresh → Remove working. API ownership tests pass; deployed Supabase SQL policy state has not been independently inspected. |
 | Astrology/numerology | Schema only | Agree calculation rules and validate inputs/data; no invented scores. |
 | Recommendation history | Schema only | Current suggestions are computed on request, not persisted. |
 | Voting, audio and trends | Schema/policies and sample fields | Product flows, real data, endpoints and UI. |
@@ -42,7 +42,7 @@ npx prisma generate
 npm run build
 ```
 
-Twelve unit/handler tests (five recommendations and seven shortlist) and lint pass. A separate complete source type-check also passes against actual schema-derived Prisma declarations generated with Prisma 5.22's official WASM parser and type generator, with the library import mapped to the installed Prisma runtime declarations in an external type-check configuration. This does not install a runtime engine or change application type settings. Prior production JavaScript compilation passed for the recommendations milestone.
+Twenty-five tests pass: thirteen profile validation/selection/API tests, five recommendation tests and seven shortlist API tests. Lint, Next route type generation and a separate complete source type-check pass against actual schema-derived Prisma declarations generated with Prisma 5.22's official WASM parser and type generator, with the library import mapped to the installed Prisma runtime declarations in an external type-check configuration. This does not install a runtime engine or change application type settings. Prior production JavaScript compilation passed for the recommendations and shortlist milestones. See RELEASE-3.md for multi-profile deployment checks.
 
 The ordinary `npm run build` did not complete: the installed runtime client lacks the generated model types. Normal generation is blocked by proxy HTTP 403 at `binaries.prisma.sh`. Authenticated/database checks remain unverified because no database/Supabase variables are injected. Keep checksum and TLS verification enabled. No production database changes were made. Use normal `npx prisma generate && npm run build` on Vercel; the external type-check configuration is only a local diagnostic aid, not a deployment workaround.
 

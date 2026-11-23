@@ -62,7 +62,7 @@ export default async function RecommendationsPage({ searchParams }: Props) {
   return (
     <main className="min-h-screen bg-gradient-to-br from-amber-50 via-rose-50 to-sky-50 px-6 py-12">
       <section className="mx-auto max-w-6xl">
-        <nav className="mb-8 flex flex-wrap gap-5 text-sm text-rose-800"><Link href="/baby-profile" className="underline">Edit baby profile</Link><Link href={`/shortlist?${profileQuery}`} className="underline">Your shortlist</Link><Link href="/names" className="underline">Browse all names</Link></nav>
+        <nav className="mb-8 flex flex-wrap gap-5 text-sm text-rose-800"><Link href={`/baby-profile?${profileQuery}`} className="underline">Edit baby profile</Link><Link href="/baby-profile?new=1" className="underline">Add another baby</Link><Link href={`/shortlist?${profileQuery}`} className="underline">Your shortlist</Link><Link href="/names" className="underline">Browse all names</Link></nav>
         <p className="text-sm font-medium text-rose-700">Chosen with your family in mind</p>
         <h1 className="mt-2 text-4xl font-bold text-stone-900">Name recommendations</h1>
         <p className="mt-3 text-stone-600">Suggestions based on your saved preferences. Open a name to explore its meaning.</p>
@@ -81,7 +81,7 @@ export default async function RecommendationsPage({ searchParams }: Props) {
           {profile.preferredStyle && !style && <p className="mt-2 text-sm text-stone-600">Your style “{profile.preferredStyle}” is saved. Style matching currently supports Modern, Spiritual and Nature.</p>}
         </div>
 
-        {!names.length ? <div className="rounded-2xl bg-white p-8 text-center"><h2 className="text-xl font-semibold">No names match these preferences yet</h2><p className="mt-3 text-stone-600">Try a different starting syllable or a longer maximum length.</p><Link href="/baby-profile" className="mt-5 inline-block rounded-lg bg-stone-900 px-5 py-3 text-white">Update preferences</Link></div> : <>
+        {!names.length ? <div className="rounded-2xl bg-white p-8 text-center"><h2 className="text-xl font-semibold">No names match these preferences yet</h2><p className="mt-3 text-stone-600">Try a different starting syllable or a longer maximum length.</p><Link href={`/baby-profile?${profileQuery}`} className="mt-5 inline-block rounded-lg bg-stone-900 px-5 py-3 text-white">Update preferences</Link></div> : <>
           <p className="mb-5 text-sm text-stone-600">{candidateCount} matching names{candidateCount > 200 ? '; showing suggestions from the 200 most popular matches' : ''}.</p>
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">{names.map((name) => <article key={name.id} className="rounded-2xl bg-white p-6 shadow-sm">
             <div className="flex items-start justify-between gap-3"><div><h2 className="text-2xl font-semibold text-stone-900"><Link href={nameLink(name.id)} className="hover:underline">{name.nameRomanized}</Link></h2><p className="text-stone-500">{name.nameNative}</p></div><span className="rounded-full bg-rose-50 px-3 py-1 text-xs text-rose-800">{name.gender}</span></div>
