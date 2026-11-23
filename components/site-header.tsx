@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import UiIcon from '@/components/ui-icon';
 import { isUuid } from '@/lib/shortlist-api';
+import AuthControls from '@/components/auth-controls';
 
 const navigation = [
   { href: '/names', label: 'Browse names' },
@@ -23,7 +24,7 @@ export function HeaderContent({ pathname = '/', profileId }: { pathname?: string
           return <Link key={item.href} href={href} prefetch={item.href === '/names' ? undefined : false} aria-current={active ? 'page' : undefined} className={`shrink-0 border-b-2 py-1.5 transition-colors ${active ? 'border-[#304b3d] font-semibold text-[#304b3d]' : 'border-transparent text-stone-600 hover:border-[#a7b59a] hover:text-[#304b3d]'}`}>{item.label}</Link>;
         })}
       </nav>
-      <div className="flex shrink-0 items-center gap-3 text-xs sm:gap-4 sm:text-sm"><Link href="/login" className="text-stone-600 hover:text-[#304b3d]">Log in</Link><Link href="/signup" className="rounded-full bg-[#304b3d] px-4 py-2.5 font-medium sm:px-5 text-white transition-colors hover:bg-[#22392c]">Get started</Link></div>
+      <AuthControls />
     </div>
   </header>;
 }

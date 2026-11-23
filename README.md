@@ -50,4 +50,6 @@ Set Production variables `SUPABASE_DATABASE_URL`, `DIRECT_URL`, `NEXT_PUBLIC_SUP
 
 Configure Supabase's site URL and `/auth/callback` redirect for the deployed hostname. Do not apply migrations or seeds to a shared database before checking its state and intended scope.
 
+The header shows Log out after the browser's initial auth session is available. Logout signs out the current Supabase session and fully redirects to login, clearing private client navigation state. Server pages/APIs still verify authentication independently. Auth pages check Supabase's public provider settings for Google availability; an enabled provider flag does not verify the full OAuth setup. See [auth release checks](docs/RELEASE-5.md).
+
 See [progress, current limitations and the five-hour daily plan](docs/PROGRESS.md).

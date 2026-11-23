@@ -30,7 +30,8 @@ export async function middleware(request: NextRequest) {
   if (isProtected && !user) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = '/login';
-    loginUrl.searchParams.set('redirectedFrom', request.nextUrl.pathname);
+    loginUrl.search = '';
+    loginUrl.searchParams.set('redirectedFrom', `${request.nextUrl.pathname}${request.nextUrl.search}`);
     const redirectResponse = NextResponse.redirect(loginUrl);
     response.cookies.getAll().forEach((cookie) => redirectResponse.cookies.set(cookie));
     return redirectResponse;
